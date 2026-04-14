@@ -2,49 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BX12 Traffic Monitor (207th Bridge)</title>
+    <title>Brooklyn Bridge Traffic Monitor</title>
     <style>
-        body { margin: 20px; background: #000; color: #eee; }
-        h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: normal; }
-        #container { display: flex; gap: 20px; align-items: flex-start; }
-        #frame { display: block; max-width: 700px; width: 100%; }
-        #sidebar { min-width: 140px; }
-        table { border-collapse: collapse; width: 100%; }
-        td { padding: 6px 8px; border-bottom: 1px solid #333; font-size: 14px; }
+        body { margin: 20px; background: #000; color: #eee; font-family: sans-serif; }
+        h2 { margin: 0 0 16px 0; font-size: 16px; font-weight: normal; }
+        #cameras { display: flex; gap: 24px; flex-wrap: wrap; }
+        .cam-block { display: flex; flex-direction: column; gap: 10px; }
+        .cam-label { font-size: 13px; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; }
+        .cam-row { display: flex; gap: 14px; align-items: flex-start; }
+        .cam-img { display: block; max-width: 580px; width: 100%; }
+        table { border-collapse: collapse; min-width: 130px; }
+        td { padding: 5px 8px; border-bottom: 1px solid #333; font-size: 13px; }
         td:last-child { text-align: right; font-weight: bold; }
-        #meta { margin-top: 12px; font-size: 12px; color: #888; }
+        #meta { margin-top: 14px; font-size: 12px; color: #888; }
     </style>
 </head>
 <body>
-    <h2>BX12 Traffic Monitor (207th Bridge / University Heights Bridge)</h2>
-    <div id="container">
-        <img id="frame" src="latest_frame.jpg" alt="Loading...">
-        <div id="sidebar">
-            <table>
-                <tr><td>Cars</td><td id="cars">—</td></tr>
-                <tr><td>Trucks</td><td id="trucks">—</td></tr>
-                <tr><td>Buses</td><td id="buses">—</td></tr>
-                <tr><td>Motorcycles</td><td id="motorcycles">—</td></tr>
-                <tr><td>Total</td><td id="total">—</td></tr>
-                <tr><td>Traffic rank</td><td id="rank">—</td></tr>
-            </table>
-            <div id="meta">Updated: <span id="timestamp">—</span></div>
+    <h2>Brooklyn Bridge Traffic Monitor</h2>
+    <div id="cameras">
+        <div class="cam-block">
+            <div class="cam-label">Inbound</div>
+            <div class="cam-row">
+                <img id="frame-inbound" class="cam-img" src="latest_frame_inbound.jpg" alt="Loading...">
+                <table>
+                    <tr><td>Cars</td><td id="in-cars">—</td></tr>
+                    <tr><td>Trucks</td><td id="in-trucks">—</td></tr>
+                    <tr><td>Buses</td><td id="in-buses">—</td></tr>
+                    <tr><td>Motorcycles</td><td id="in-motorcycles">—</td></tr>
+                    <tr><td>Total</td><td id="in-total">—</td></tr>
+                    <tr><td>Traffic rank</td><td id="in-rank">—</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="cam-block">
+            <div class="cam-label">Outbound</div>
+            <div class="cam-row">
+                <img id="frame-outbound" class="cam-img" src="latest_frame_outbound.jpg" alt="Loading...">
+                <table>
+                    <tr><td>Cars</td><td id="out-cars">—</td></tr>
+                    <tr><td>Trucks</td><td id="out-trucks">—</td></tr>
+                    <tr><td>Buses</td><td id="out-buses">—</td></tr>
+                    <tr><td>Motorcycles</td><td id="out-motorcycles">—</td></tr>
+                    <tr><td>Total</td><td id="out-total">—</td></tr>
+                    <tr><td>Traffic rank</td><td id="out-rank">—</td></tr>
+                </table>
+            </div>
         </div>
     </div>
+    <div id="meta">Updated: <span id="timestamp">—</span></div>
 
     <script>
         function refresh() {
-            document.getElementById("frame").src = "latest_frame.jpg?t=" + Date.now();
-            fetch("latest_stats.json?t=" + Date.now())
+            const t = Date.now();
+            document.getElementById("frame-inbound").src = "latest_frame_inbound.jpg?t=" + t;
+            document.getElementById("frame-outbound").src = "latest_frame_outbound.jpg?t=" + t;
+            fetch("latest_stats.json?t=" + t)
                 .then(r => r.json())
                 .then(d => {
-                    document.getElementById("cars").textContent = d.cars;
-                    document.getElementById("trucks").textContent = d.trucks;
-                    document.getElementById("buses").textContent = d.buses;
-                    document.getElementById("motorcycles").textContent = d.motorcycles;
-                    document.getElementById("total").textContent = d.total;
-                    document.getElementById("rank").textContent = d.rank + " / 10";
                     document.getElementById("timestamp").textContent = d.timestamp;
+                    if (d.inbound) {
+                        document.getElementById("in-cars").textContent = d.inbound.cars;
+                        document.getElementById("in-trucks").textContent = d.inbound.trucks;
+                        document.getElementById("in-buses").textContent = d.inbound.buses;
+                        document.getElementById("in-motorcycles").textContent = d.inbound.motorcycles;
+                        document.getElementById("in-total").textContent = d.inbound.total;
+                        document.getElementById("in-rank").textContent = d.inbound.rank + " / 10";
+                    }
+                    if (d.outbound) {
+                        document.getElementById("out-cars").textContent = d.outbound.cars;
+                        document.getElementById("out-trucks").textContent = d.outbound.trucks;
+                        document.getElementById("out-buses").textContent = d.outbound.buses;
+                        document.getElementById("out-motorcycles").textContent = d.outbound.motorcycles;
+                        document.getElementById("out-total").textContent = d.outbound.total;
+                        document.getElementById("out-rank").textContent = d.outbound.rank + " / 10";
+                    }
                 })
                 .catch(() => {});
         }
