@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BX12 Traffic Monitor (207th Bridge)</title>
+    <style>
+        body { margin: 20px; background: #000; color: #eee; }
+        h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: normal; }
+        #container { display: flex; gap: 20px; align-items: flex-start; }
+        #frame { display: block; max-width: 700px; width: 100%; }
+        #sidebar { min-width: 140px; }
+        table { border-collapse: collapse; width: 100%; }
+        td { padding: 6px 8px; border-bottom: 1px solid #333; font-size: 14px; }
+        td:last-child { text-align: right; font-weight: bold; }
+        #meta { margin-top: 12px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <h2>BX12 Traffic Monitor (207th Bridge / University Heights Bridge)</h2>
+    <div id="container">
+        <img id="frame" src="latest_frame.jpg" alt="Loading...">
+        <div id="sidebar">
+            <table>
+                <tr><td>Cars</td><td id="cars">—</td></tr>
+                <tr><td>Trucks</td><td id="trucks">—</td></tr>
+                <tr><td>Buses</td><td id="buses">—</td></tr>
+                <tr><td>Motorcycles</td><td id="motorcycles">—</td></tr>
+                <tr><td>Total</td><td id="total">—</td></tr>
+                <tr><td>Traffic rank</td><td id="rank">—</td></tr>
+            </table>
+            <div id="meta">Updated: <span id="timestamp">—</span></div>
+        </div>
+    </div>
+
+    <script>
+        function refresh() {
+            document.getElementById("frame").src = "latest_frame.jpg?t=" + Date.now();
+            fetch("latest_stats.json?t=" + Date.now())
+                .then(r => r.json())
+                .then(d => {
+                    document.getElementById("cars").textContent = d.cars;
+                    document.getElementById("trucks").textContent = d.trucks;
+                    document.getElementById("buses").textContent = d.buses;
+                    document.getElementById("motorcycles").textContent = d.motorcycles;
+                    document.getElementById("total").textContent = d.total;
+                    document.getElementById("rank").textContent = d.rank + " / 10";
+                    document.getElementById("timestamp").textContent = d.timestamp;
+                })
+                .catch(() => {});
+        }
+        refresh();
+        setInterval(refresh, 10000);
+    </script>
+</body>
+</html>
