@@ -1,86 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Brooklyn Bridge Traffic Monitor</title>
-    <style>
-        body { margin: 20px; background: #000; color: #eee; font-family: sans-serif; }
-        h2 { margin: 0 0 16px 0; font-size: 16px; font-weight: normal; }
-        #cameras { display: flex; gap: 24px; flex-wrap: wrap; }
-        .cam-block { display: flex; flex-direction: column; gap: 10px; }
-        .cam-label { font-size: 13px; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; }
-        .cam-row { display: flex; gap: 14px; align-items: flex-start; }
-        .cam-img { display: block; max-width: 580px; width: 100%; }
-        table { border-collapse: collapse; min-width: 130px; }
-        td { padding: 5px 8px; border-bottom: 1px solid #333; font-size: 13px; }
-        td:last-child { text-align: right; font-weight: bold; }
-        #meta { margin-top: 14px; font-size: 12px; color: #888; }
-    </style>
+<meta charset="UTF-8">
+<title>Brooklyn Bridge — Traffic</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #e6edf3; font: 13px/1.5 'JetBrains Mono', monospace; padding: 14px; }
+h1 { font-size: 12px; font-weight: 400; color: #7d8590; margin-bottom: 14px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.panel { border: 1px solid #30363d; }
+.panel h2 { font-size: 11px; font-weight: 500; color: #7d8590; padding: 6px 10px; border-bottom: 1px solid #21262d; text-transform: uppercase; letter-spacing: .06em; }
+.body { display: flex; }
+.body img { display: block; width: 100%; height: auto; background: #000; flex: 1; }
+table { width: 136px; flex-shrink: 0; border-left: 1px solid #21262d; border-collapse: collapse; }
+td { padding: 6px 10px; border-bottom: 1px solid #21262d; font-size: 12px; }
+td:first-child { color: #7d8590; }
+td:last-child { text-align: right; }
+tr:last-child td { border-bottom: none; }
+.total td { color: #e6edf3; }
+.rank-low  td:last-child { color: #3fb950; }
+.rank-med  td:last-child { color: #d29922; }
+.rank-high td:last-child { color: #f85149; }
+footer { margin-top: 10px; font-size: 11px; color: #3d444d; }
+</style>
 </head>
 <body>
-    <h2>Brooklyn Bridge Traffic Monitor</h2>
-    <div id="cameras">
-        <div class="cam-block">
-            <div class="cam-label">Inbound</div>
-            <div class="cam-row">
-                <img id="frame-inbound" class="cam-img" src="latest_frame_inbound.jpg" alt="Loading...">
-                <table>
-                    <tr><td>Cars</td><td id="in-cars">—</td></tr>
-                    <tr><td>Trucks</td><td id="in-trucks">—</td></tr>
-                    <tr><td>Buses</td><td id="in-buses">—</td></tr>
-                    <tr><td>Motorcycles</td><td id="in-motorcycles">—</td></tr>
-                    <tr><td>Total</td><td id="in-total">—</td></tr>
-                    <tr><td>Traffic rank</td><td id="in-rank">—</td></tr>
-                </table>
-            </div>
-        </div>
-        <div class="cam-block">
-            <div class="cam-label">Outbound</div>
-            <div class="cam-row">
-                <img id="frame-outbound" class="cam-img" src="latest_frame_outbound.jpg" alt="Loading...">
-                <table>
-                    <tr><td>Cars</td><td id="out-cars">—</td></tr>
-                    <tr><td>Trucks</td><td id="out-trucks">—</td></tr>
-                    <tr><td>Buses</td><td id="out-buses">—</td></tr>
-                    <tr><td>Motorcycles</td><td id="out-motorcycles">—</td></tr>
-                    <tr><td>Total</td><td id="out-total">—</td></tr>
-                    <tr><td>Traffic rank</td><td id="out-rank">—</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="meta">Updated: <span id="timestamp">—</span></div>
 
-    <script>
-        function refresh() {
-            const t = Date.now();
-            document.getElementById("frame-inbound").src = "latest_frame_inbound.jpg?t=" + t;
-            document.getElementById("frame-outbound").src = "latest_frame_outbound.jpg?t=" + t;
-            fetch("latest_stats.json?t=" + t)
-                .then(r => r.json())
-                .then(d => {
-                    document.getElementById("timestamp").textContent = d.timestamp;
-                    if (d.inbound) {
-                        document.getElementById("in-cars").textContent = d.inbound.cars;
-                        document.getElementById("in-trucks").textContent = d.inbound.trucks;
-                        document.getElementById("in-buses").textContent = d.inbound.buses;
-                        document.getElementById("in-motorcycles").textContent = d.inbound.motorcycles;
-                        document.getElementById("in-total").textContent = d.inbound.total;
-                        document.getElementById("in-rank").textContent = d.inbound.rank + " / 10";
-                    }
-                    if (d.outbound) {
-                        document.getElementById("out-cars").textContent = d.outbound.cars;
-                        document.getElementById("out-trucks").textContent = d.outbound.trucks;
-                        document.getElementById("out-buses").textContent = d.outbound.buses;
-                        document.getElementById("out-motorcycles").textContent = d.outbound.motorcycles;
-                        document.getElementById("out-total").textContent = d.outbound.total;
-                        document.getElementById("out-rank").textContent = d.outbound.rank + " / 10";
-                    }
-                })
-                .catch(() => {});
-        }
-        refresh();
-        setInterval(refresh, 10000);
-    </script>
+<h1>Brooklyn Bridge — Traffic Monitor</h1>
+
+<div class="grid">
+  <div class="panel">
+    <h2>&#x2190; Inbound</h2>
+    <div class="body">
+      <img id="fi" src="latest_frame_inbound.jpg" alt="">
+      <table>
+        <tr><td>Cars</td><td id="ic">—</td></tr>
+        <tr><td>Trucks</td><td id="it">—</td></tr>
+        <tr><td>Buses</td><td id="ib">—</td></tr>
+        <tr><td>Moto</td><td id="im">—</td></tr>
+        <tr class="total"><td>Total</td><td id="itot">—</td></tr>
+        <tr id="ir"><td>Density</td><td id="irv">—</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Outbound &#x2192;</h2>
+    <div class="body">
+      <img id="fo" src="latest_frame_outbound.jpg" alt="">
+      <table>
+        <tr><td>Cars</td><td id="oc">—</td></tr>
+        <tr><td>Trucks</td><td id="ot">—</td></tr>
+        <tr><td>Buses</td><td id="ob">—</td></tr>
+        <tr><td>Moto</td><td id="om">—</td></tr>
+        <tr class="total"><td>Total</td><td id="otot">—</td></tr>
+        <tr id="or"><td>Density</td><td id="orv">—</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>updated <span id="ts">—</span></footer>
+
+<script>
+function rankClass(r) { return r <= 3 ? 'rank-low' : r <= 6 ? 'rank-med' : 'rank-high'; }
+
+function refresh() {
+  const t = Date.now();
+  document.getElementById('fi').src = 'latest_frame_inbound.jpg?t='  + t;
+  document.getElementById('fo').src = 'latest_frame_outbound.jpg?t=' + t;
+  fetch('latest_stats.json?t=' + t).then(r => r.json()).then(d => {
+    if (d.timestamp) document.getElementById('ts').textContent = d.timestamp;
+    if (d.inbound) {
+      document.getElementById('ic').textContent   = d.inbound.cars;
+      document.getElementById('it').textContent   = d.inbound.trucks;
+      document.getElementById('ib').textContent   = d.inbound.buses;
+      document.getElementById('im').textContent   = d.inbound.motorcycles;
+      document.getElementById('itot').textContent = d.inbound.total;
+      document.getElementById('irv').textContent  = d.inbound.rank + ' / 10';
+      document.getElementById('ir').className     = rankClass(d.inbound.rank);
+    }
+    if (d.outbound) {
+      document.getElementById('oc').textContent   = d.outbound.cars;
+      document.getElementById('ot').textContent   = d.outbound.trucks;
+      document.getElementById('ob').textContent   = d.outbound.buses;
+      document.getElementById('om').textContent   = d.outbound.motorcycles;
+      document.getElementById('otot').textContent = d.outbound.total;
+      document.getElementById('orv').textContent  = d.outbound.rank + ' / 10';
+      document.getElementById('or').className     = rankClass(d.outbound.rank);
+    }
+  }).catch(() => {});
+}
+
+refresh();
+setInterval(refresh, 10000);
+</script>
 </body>
 </html>
