@@ -1,183 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0a0a0a; color: #eee; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; padding: 14px; gap: 12px; }
+<meta charset="UTF-8">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a0a; color: #eee; font-family: sans-serif; height: 100vh; display: flex; padding: 14px; gap: 12px; overflow: hidden; }
 
-        .spacer {
-    flex-grow: 1;
-}
+#sidebar { width: 200px; flex-shrink: 0; background: #141414; border-radius: 14px; border: 1px solid #222; padding: 16px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+.section-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+.stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e1e1e; font-size: 12px; }
+.stat-row span:first-child { color: #888; }
+.stat-row span:last-child { font-weight: bold; }
+.total span:last-child { color: #fff; font-size: 13px; }
+.density span:last-child { color: #6af; }
+.divider { height: 1px; background: #1e1e1e; }
+#note { font-size: 10px; color: #7c7c7c; line-height: 1.6; margin-top: auto; }
 
-        #main { 
-    display: flex; 
-    flex: 1; 
-    gap: 12px; 
-    overflow: hidden; 
-}
-
-        /* ── Sidebar ── */
-        #sidebar { 
-    width: 200px; 
-    flex-shrink: 0; 
-    background: #141414; 
-    border-radius: 14px; 
-    border: 1px solid #222; 
-    padding: 16px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
-    /* Independent scrollbar for sidebar if content gets too tall */
-    overflow-y: auto; 
-}
-
-        .section-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
-        .badge { font-size: 9px; color: #6af; background: #0d1f33; padding: 1px 6px; border-radius: 3px; margin-left: 4px; }
-
-        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #1e1e1e; }
-        .stat-name { font-size: 12px; color: #888; }
-        .stat-val { font-size: 12px; font-weight: bold; color: #eee; }
-        .stat-val.total { color: #fff; font-size: 13px; }
-        .stat-val.rank { color: #6af; }
-
-        .divider { height: 1px; background: #1e1e1e; }
-
-        #meta { margin-top: auto; font-size: 10px; color: #7c7c7c; line-height: 1.6; }
-        #meta span { color: #7c7c7c; }
-
-        #cameras { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: row; /* Changed from column to row */
-    flex-wrap: wrap;     /* Allows them to stack on very small screens */
-    justify-content: center; 
-    gap: 16px;           /* Slightly wider gap for side-by-side view */
-    overflow-y: auto; 
-    overflow-x: hidden; 
-    padding: 10px;
-}
-
-.cam-block { 
-    /* Changed to allow two to sit side-by-side */
-    flex: 1 1 45%;      
-    min-width: 320px;    /* Prevents them from getting too squashed */
-    max-width: 642px; 
-    display: flex; 
-    flex-direction: column; 
-    background: #141414; 
-    border-radius: 6px; 
-    border: 1px solid #333; 
-    margin-top: 10px;
-    padding: 0;
-    height: fit-content; /* Ensures the border wraps the image height tightly */
-}
-
-.cam-header {
-    margin-left: 12px; /* Moves label away from the left corner */
-    padding: 0 8px;    /* Space between the border lines and text */
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #aaa;
-}
-
-.cam-frame {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 14px; /* Space between the feed and the wrapper border */
-}
-
-.cam-frame img { 
-    width: 100%; 
-    max-width: 640px; 
-    height: auto; 
-    object-fit: contain; 
-    display: block;
-    border-radius: 4px;
-}
-    </style>
+#cameras { flex: 1; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 16px; overflow-y: auto; padding: 10px; }
+fieldset { flex: 1 1 45%; min-width: 320px; max-width: 642px; background: #141414; border-radius: 6px; border: 1px solid #333; height: fit-content; margin-top: 10px; }
+legend { margin-left: 12px; padding: 0 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; color: #aaa; }
+.cam-frame { display: flex; justify-content: center; padding: 14px; }
+.cam-frame img { width: 100%; max-width: 640px; height: auto; display: block; border-radius: 4px; }
+</style>
 </head>
 <body>
-    <div id="main">
-        <div id="sidebar">
-            <div>
-                <div class="section-label">Inbound → Manhattan</div>
-                <div class="stat-row"><span class="stat-name">Cars</span><span class="stat-val" id="in-cars">—</span></div>
-                <div class="stat-row"><span class="stat-name">Trucks</span><span class="stat-val" id="in-trucks">—</span></div>
-                <div class="stat-row"><span class="stat-name">Buses</span><span class="stat-val" id="in-buses">—</span></div>
-                <div class="stat-row"><span class="stat-name">Motorcycles</span><span class="stat-val" id="in-motorcycles">—</span></div>
-                <div class="stat-row"><span class="stat-name">Total</span><span class="stat-val total" id="in-total">—</span></div>
-                <div class="stat-row"><span class="stat-name">Traffic rank</span><span class="stat-val rank" id="in-rank">—</span></div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div>
-                <div class="section-label">Outbound ← Brooklyn</div>
-                <div class="stat-row"><span class="stat-name">Cars</span><span class="stat-val" id="out-cars">—</span></div>
-                <div class="stat-row"><span class="stat-name">Trucks</span><span class="stat-val" id="out-trucks">—</span></div>
-                <div class="stat-row"><span class="stat-name">Buses</span><span class="stat-val" id="out-buses">—</span></div>
-                <div class="stat-row"><span class="stat-name">Motorcycles</span><span class="stat-val" id="out-motorcycles">—</span></div>
-                <div class="stat-row"><span class="stat-name">Total</span><span class="stat-val total" id="out-total">—</span></div>
-                <div class="stat-row"><span class="stat-name">Traffic rank</span><span class="stat-val rank" id="out-rank">—</span></div>
-            </div>
-            <div class="spacer"></div>
-            <div id="meta">Note: Density is relative to the last 20 frames (~200 seconds)</div>
-            <div id="meta">Updated<br><span id="timestamp">—</span></div>
-        </div>
-
-        <div id="cameras">
-            <fieldset class="cam-block">
-                <legend class="cam-header">Inbound feed</legend>
-                <div class="cam-frame">
-                    <img id="frame-inbound" src="latest_frame_inbound.jpg" alt="Inbound camera">
-                </div>
-            </fieldset>
-
-            <fieldset class="cam-block">
-                <legend class="cam-header">Outbound feed</legend>
-                <div class="cam-frame">
-                    <img id="frame-outbound" src="latest_frame_outbound.jpg" alt="Outbound camera">
-                </div>
-            </fieldset>
-        </div>
+<div id="sidebar">
+    <div>
+        <div class="section-label">Inbound → Manhattan</div>
+        <div class="stat-row"><span>Cars</span><span id="in-cars">—</span></div>
+        <div class="stat-row"><span>Trucks</span><span id="in-trucks">—</span></div>
+        <div class="stat-row"><span>Buses</span><span id="in-buses">—</span></div>
+        <div class="stat-row"><span>Motorcycles</span><span id="in-motorcycles">—</span></div>
+        <div class="stat-row total"><span>Total</span><span id="in-total">—</span></div>
+        <div class="stat-row density"><span>Density</span><span id="in-rank">—</span></div>
     </div>
+    <div class="divider"></div>
+    <div>
+        <div class="section-label">Outbound ← Brooklyn</div>
+        <div class="stat-row"><span>Cars</span><span id="out-cars">—</span></div>
+        <div class="stat-row"><span>Trucks</span><span id="out-trucks">—</span></div>
+        <div class="stat-row"><span>Buses</span><span id="out-buses">—</span></div>
+        <div class="stat-row"><span>Motorcycles</span><span id="out-motorcycles">—</span></div>
+        <div class="stat-row total"><span>Total</span><span id="out-total">—</span></div>
+        <div class="stat-row density"><span>Density</span><span id="out-rank">—</span></div>
+    </div>
+    <div id="note">Density is relative to the last 20 frames (~200s)<br><br>Updated: <span id="timestamp">—</span></div>
+</div>
 
-    <script>
-        function refresh() {
-            const t = Date.now();
-            document.getElementById("frame-inbound").src = "latest_frame_inbound.jpg?t=" + t;
-            document.getElementById("frame-outbound").src = "latest_frame_outbound.jpg?t=" + t;
-            fetch("latest_stats.json?t=" + t)
-                .then(r => r.json())
-                .then(d => {
-                    document.getElementById("timestamp").textContent = d.timestamp;
-                    if (d.inbound) {
-                        document.getElementById("in-cars").textContent = d.inbound.cars;
-                        document.getElementById("in-trucks").textContent = d.inbound.trucks;
-                        document.getElementById("in-buses").textContent = d.inbound.buses;
-                        document.getElementById("in-motorcycles").textContent = d.inbound.motorcycles;
-                        document.getElementById("in-total").textContent = d.inbound.total;
-                        document.getElementById("in-rank").textContent = d.inbound.rank + " / 10";
-                    }
-                    if (d.outbound) {
-                        document.getElementById("out-cars").textContent = d.outbound.cars;
-                        document.getElementById("out-trucks").textContent = d.outbound.trucks;
-                        document.getElementById("out-buses").textContent = d.outbound.buses;
-                        document.getElementById("out-motorcycles").textContent = d.outbound.motorcycles;
-                        document.getElementById("out-total").textContent = d.outbound.total;
-                        document.getElementById("out-rank").textContent = d.outbound.rank + " / 10";
-                    }
-                })
-                .catch(() => {});
+<div id="cameras">
+    <fieldset>
+        <legend>Inbound feed</legend>
+        <div class="cam-frame"><img id="frame-inbound" src="latest_frame_inbound.jpg" alt=""></div>
+    </fieldset>
+    <fieldset>
+        <legend>Outbound feed</legend>
+        <div class="cam-frame"><img id="frame-outbound" src="latest_frame_outbound.jpg" alt=""></div>
+    </fieldset>
+</div>
+
+<script>
+function refresh() {
+    const t = Date.now();
+    document.getElementById("frame-inbound").src  = "latest_frame_inbound.jpg?t="  + t;
+    document.getElementById("frame-outbound").src = "latest_frame_outbound.jpg?t=" + t;
+    fetch("latest_stats.json?t=" + t).then(r => r.json()).then(d => {
+        if (d.timestamp) document.getElementById("timestamp").textContent = d.timestamp;
+        if (d.inbound) {
+            document.getElementById("in-cars").textContent        = d.inbound.cars;
+            document.getElementById("in-trucks").textContent      = d.inbound.trucks;
+            document.getElementById("in-buses").textContent       = d.inbound.buses;
+            document.getElementById("in-motorcycles").textContent = d.inbound.motorcycles;
+            document.getElementById("in-total").textContent       = d.inbound.total;
+            document.getElementById("in-rank").textContent        = d.inbound.rank + " / 10";
         }
-        refresh();
-        setInterval(refresh, 10000);
-    </script>
+        if (d.outbound) {
+            document.getElementById("out-cars").textContent        = d.outbound.cars;
+            document.getElementById("out-trucks").textContent      = d.outbound.trucks;
+            document.getElementById("out-buses").textContent       = d.outbound.buses;
+            document.getElementById("out-motorcycles").textContent = d.outbound.motorcycles;
+            document.getElementById("out-total").textContent       = d.outbound.total;
+            document.getElementById("out-rank").textContent        = d.outbound.rank + " / 10";
+        }
+    }).catch(() => {});
+}
+refresh();
+setInterval(refresh, 10000);
+</script>
 </body>
 </html>
