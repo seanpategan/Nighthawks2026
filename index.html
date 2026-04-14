@@ -49,27 +49,28 @@
         #cameras { 
     flex: 1; 
     display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    align-items: center; 
-    /* Enable vertical scrolling */
+    flex-direction: row; /* Changed from column to row */
+    flex-wrap: wrap;     /* Allows them to stack on very small screens */
+    justify-content: center; 
+    gap: 16px;           /* Slightly wider gap for side-by-side view */
     overflow-y: auto; 
-    /* Smooth scrolling and hide horizontal overflow */
     overflow-x: hidden; 
-    padding-right: 4px; /* Space for the scrollbar so it doesn't touch the boxes */
+    padding: 10px;
 }
 
-        .cam-block { 
-    width: 100%;
+.cam-block { 
+    /* Changed to allow two to sit side-by-side */
+    flex: 1 1 45%;      
+    min-width: 320px;    /* Prevents them from getting too squashed */
     max-width: 642px; 
-    flex: 1; 
     display: flex; 
     flex-direction: column; 
     background: #141414; 
     border-radius: 6px; 
-    border: 1px solid #333; /* This is the border wrapping everything */
+    border: 1px solid #333; 
     margin-top: 10px;
-    padding: 0; /* Reset default fieldset padding */
+    padding: 0;
+    height: fit-content; /* Ensures the border wraps the image height tightly */
 }
 
 .cam-header {
