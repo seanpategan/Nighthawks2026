@@ -8,10 +8,27 @@
 
         #header { font-size: 13px; color: #555; letter-spacing: 0.06em; flex-shrink: 0; padding: 0 4px; }
 
-        #main { display: flex; flex: 1; gap: 12px; }
+        #main { 
+    display: flex; 
+    flex: 1; 
+    gap: 12px; 
+    overflow: hidden; 
+}
 
         /* ── Sidebar ── */
-        #sidebar { width: 200px; flex-shrink: 0; background: #141414; border-radius: 14px; border: 1px solid #222; box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4); padding: 16px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        #sidebar { 
+    width: 200px; 
+    flex-shrink: 0; 
+    background: #141414; 
+    border-radius: 14px; 
+    border: 1px solid #222; 
+    padding: 16px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    /* Independent scrollbar for sidebar if content gets too tall */
+    overflow-y: auto; 
+}
 
         .section-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .badge { font-size: 9px; color: #6af; background: #0d1f33; padding: 1px 6px; border-radius: 3px; margin-left: 4px; }
@@ -28,13 +45,17 @@
         #meta span { color: #666; }
 
         #cameras { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            overflow: hidden; 
-            align-items: center; /* Centers the blocks horizontally */
-        }
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    align-items: center; 
+    /* Enable vertical scrolling */
+    overflow-y: auto; 
+    /* Smooth scrolling and hide horizontal overflow */
+    overflow-x: hidden; 
+    padding-right: 4px; /* Space for the scrollbar so it doesn't touch the boxes */
+}
 
         .cam-block { 
     width: 100%;
